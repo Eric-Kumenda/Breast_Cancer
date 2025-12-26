@@ -37,7 +37,9 @@ export const uploadScan = createAsyncThunk(
 			const formData = new FormData();
 			formData.append("file", file);
 
-			const response = await fetch("http://localhost:5000/predict", {
+			const apiUrl =
+				process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+			const response = await fetch(`${apiUrl}/predict`, {
 				method: "POST",
 				headers: {
 					Authorization: `Bearer ${session.access_token}`,

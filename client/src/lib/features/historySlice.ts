@@ -47,15 +47,14 @@ export const deleteScan = createAsyncThunk(
 			const session = state.auth.session;
 			if (!session) throw new Error("No session");
 
-			const response = await fetch(
-				`http://localhost:5000/scans/${scanId}`,
-				{
-					method: "DELETE",
-					headers: {
-						Authorization: `Bearer ${session.access_token}`,
-					},
-				}
-			);
+			const apiUrl =
+				process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+			const response = await fetch(`${apiUrl}/scans/${scanId}`, {
+				method: "DELETE",
+				headers: {
+					Authorization: `Bearer ${session.access_token}`,
+				},
+			});
 
 			if (!response.ok) {
 				const err = await response.json();
