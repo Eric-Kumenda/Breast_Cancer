@@ -13,6 +13,11 @@ dist/
 
 # Large Model Files (Optional: recommended to download separately or use Git LFS)
 # backend/models/*.h5
+models/VGG16_mammogram_model_3datasets.h5
+models/vit_mammogram_model.keras
+models/VGG16_mammogram_model.h5
+
+app2.py
 
 # Misc
 .DS_Store
