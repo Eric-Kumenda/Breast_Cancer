@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Lock, Mail, Loader2, ArrowRight, Wand2 } from "lucide-react";
+import { Lock, Mail, Loader2, ArrowRight, Wand2, Activity } from "lucide-react";
 import { useAppDispatch } from "@/lib/hooks";
 import { checkSession } from "@/lib/features/authSlice";
 import { motion } from "framer-motion";
@@ -95,8 +95,11 @@ export default function LoginPage() {
 			<div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-slate-900 transition-colors">
 				<div className="w-full max-w-md">
 					<div className="text-center mb-10">
-						<div className="w-16 h-16 bg-pink-500 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg shadow-pink-500/30">
-							<Lock className="w-8 h-8 text-white" />
+						<div className="flex items-center justify-center gap-2 mb-2">
+							<Activity className="h-8 w-8 text-primary" />
+							<span className="text-2xl font-bold text-foreground">
+								EarlyVision
+							</span>
 						</div>
 						<h1 className="text-4xl font-bold text-slate-800 dark:text-white mb-3 font-display">
 							{isSignUp ? "Create Account" : "Welcome Back"}

@@ -9,8 +9,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 // const outfit = Outfit({ subsets: ["latin"], variable: '--font-outfit' }); // Optional: nicer headings
 
 export const metadata: Metadata = {
-	title: "MammoDetect",
-	description: "Advanced AI Breast Cancer Detection",
+	title: "EarlyVision - Breast Cancer Detection",
+	description:
+		"EarlyVision uses advanced AI to detect breast cancer early from mammograms and ultrasounds.",
 };
 
 export default function RootLayout({

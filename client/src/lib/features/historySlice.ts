@@ -8,6 +8,7 @@ export interface ScanRecord {
 	confidence_score: number;
 	original_image_url: string;
 	annotated_image_url?: string;
+	scan_type?: string;
 }
 
 interface HistoryState {

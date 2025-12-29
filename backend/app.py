@@ -15,6 +15,7 @@ import io
 import cv2
 import time
 import uuid
+import base64
 
 # Load environment variables
 load_dotenv()
@@ -111,10 +112,13 @@ def create_vit_classifier():
 # --- Model Loading ---
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'vit_mammogram_model.keras')
+ULTRA_MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'ultrasound_unet_model.h5')
+
 model = None
+ultrasound_model = None
 
 def load_model():
-    global model
+    global model, ultrasound_model
     try:
         if os.path.exists(MODEL_PATH):
             print(f"Loading model architecture and weights from {MODEL_PATH}...")
@@ -129,6 +133,18 @@ def load_model():
         print(f"Error loading model: {e}")
         import traceback
         traceback.print_exc()
+
+    # --- Load Ultrasound Model ---
+    try:
+        if os.path.exists(ULTRA_MODEL_PATH):
+            print(f"🔹 Loading Ultrasound U-Net from {ULTRA_MODEL_PATH}...")
+            # compile=False is critical for avoiding custom loss function errors during inference
+            ultrasound_model = tf.keras.models.load_model(ULTRA_MODEL_PATH, compile=False)
+            print("✅ Ultrasound Model loaded.")
+        else:
+            print(f"⚠️ Warning: Ultrasound model NOT found at {ULTRA_MODEL_PATH}. (Skipping)")
+    except Exception as e:
+        print(f"❌ Error loading Ultrasound model: {e}")
 
 load_model()
 
@@ -160,12 +176,34 @@ def preprocess_image(image_bytes):
     
     return img_array, img
 
+def preprocess_ultrasound(image_bytes):
+    """
+    Converts raw bytes -> RGB -> Resized (128x128) -> Normalized (0 to 1)
+    """
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # Keep RGB
+    
+    if img is None:
+        raise ValueError("Could not decode image")
+        
+    img_resized = cv2.resize(img, (128, 128))
+    img_norm = img_resized / 255.0 # Normalize to [0, 1]
+    img_input = np.expand_dims(img_norm, axis=0) # Add batch dim
+    
+    return img_input, img_resized
+
 
 # ... health check ...
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "healthy", "model_loaded": model is not None})
+    return jsonify({
+        "status": "healthy", 
+        "models_status": {
+            "mammogram": "Active" if model else "Inactive",
+            "ultrasound": "Active" if ultrasound_model else "Inactive"
+        }
+    })
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -253,7 +291,8 @@ def predict():
                 "original_image_url": image_url,
                 "prediction_label": label,
                 "confidence_score": confidence,
-                "annotated_image_url": image_url # For now same as original
+                "annotated_image_url": image_url, # For now same as original
+                "scan_type": "mammogram"
             }
             db_res = supabase.table("scans").insert(db_data).execute()
         
@@ -321,6 +360,108 @@ def delete_scan(scan_id):
 
     except Exception as e:
         print(f"Delete error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# --- ULTRASOUND PREDICTION ---
+@app.route('/ultrasound', methods=['POST'])
+def predict_ultrasound():
+    if not ultrasound_model:
+        return jsonify({"error": "Ultrasound model is not active on the server."}), 503
+
+    # Verify Auth
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({"error": "Missing Authorization header"}), 401
+    
+    token = auth_header.split(" ")[1]
+    
+    try:
+        user_response = supabase.auth.get_user(token)
+        user_id = user_response.user.id
+    except Exception as e:
+        print(f"Auth error: {e}")
+        return jsonify({"error": "Invalid token"}), 401
+
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    try:
+        file_bytes = file.read()
+        filename = secure_filename(file.filename)
+        
+        # 1. Preprocess
+        input_tensor, original_img = preprocess_ultrasound(file_bytes)
+        
+        # 2. Predict (Segmentation Map)
+        pred_mask = ultrasound_model.predict(input_tensor)
+        
+        # 3. Post-Process Mask
+        # Threshold at 0.5 (Pixels > 0.5 are tumor)
+        mask = (pred_mask > 0.5).astype(np.uint8) * 255
+        mask_2d = mask[0, :, :, 0] # Remove extra dims to get 128x128 image
+        
+        # 4. Check Diagnosis
+        has_tumor = np.sum(mask_2d) > 0 # If any white pixels exist, tumor is found
+        confidence = float(np.max(pred_mask)) # Max probability in the map
+        
+        # 5. Convert Mask to Base64 (For frontend display)
+        _, buffer = cv2.imencode('.png', mask_2d)
+        mask_base64 = base64.b64encode(buffer).decode('utf-8')
+
+        label = "Potential Abnormality Detected" if has_tumor else "No Abnormality Detected"
+        
+        # 6. Save to Supabase
+        image_url = ""
+        if supabase:
+             # Create a unique path
+            unique_id = str(uuid.uuid4())
+            file_ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else 'jpg'
+            # Using same bucket 'mammo-scans'
+            storage_path = f"{user_id}/ultrasound_{unique_id}.{file_ext}"
+            
+            try:
+                res = supabase.storage.from_("mammo-scans").upload(
+                    path=storage_path,
+                    file=file_bytes,
+                    file_options={"content-type": file.content_type}
+                )
+                public_url_res = supabase.storage.from_("mammo-scans").get_public_url(storage_path)
+                image_url = public_url_res
+                
+            except Exception as storage_err:
+                print(f"Storage Error (Ultrasound): {storage_err}")
+                image_url = ""
+
+        # 7. Save to Database
+        if image_url:
+            db_data = {
+                "user_id": user_id,
+                "original_image_url": image_url,
+                "prediction_label": label,
+                "confidence_score": confidence,
+                "annotated_image_url": image_url, 
+                "scan_type": "ultrasound"
+            }
+            db_res = supabase.table("scans").insert(db_data).execute()
+
+        return jsonify({
+            "type": "ultrasound",
+            "prediction": label, 
+            "diagnosis": label,
+            "tumor_detected": bool(has_tumor),
+            "confidence": confidence,
+            "mask_image": f"data:image/png;base64,{mask_base64}",
+            "image_url": image_url
+        })
+
+    except Exception as e:
+        print(f"Ultrasound Error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":

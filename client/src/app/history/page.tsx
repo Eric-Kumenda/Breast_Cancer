@@ -8,13 +8,7 @@ import {
 	ScanRecord,
 } from "@/lib/features/historySlice";
 import GlassCard from "@/components/GlassCard";
-import {
-	Calendar,
-	AlertOctagon,
-	CheckCircle,
-	Search,
-	Filter,
-} from "lucide-react";
+import { Calendar, AlertOctagon, CheckCircle, Search } from "lucide-react";
 import { checkSession } from "@/lib/features/authSlice";
 import { useRouter } from "next/navigation";
 import { DashboardLoader } from "@/components/DashboardLoader";
@@ -36,6 +30,37 @@ export default function HistoryPage() {
 	const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
 	const [scanToDelete, setScanToDelete] = React.useState<string | null>(null);
 	const [isDeleting, setIsDeleting] = React.useState(false);
+
+	// Filter Logic
+	const [filterType, setFilterType] = React.useState<
+		"all" | "mammogram" | "ultrasound"
+	>("all");
+	const [searchQuery, setSearchQuery] = React.useState("");
+
+	const filteredScans = React.useMemo(() => {
+		return scans.filter((scan) => {
+			// 1. Filter by Type
+			if (filterType !== "all" && scan.scan_type !== filterType) {
+				// Fallback for messy data: if scan_type is missing, assume mammogram if filter is mammogram?
+				// Or just strict string match. Let's do strict.
+				// Actually, if scan_type is undefined, it might be an old mammogram.
+				if (filterType === "mammogram" && !scan.scan_type) return true;
+				return false;
+			}
+
+			// 2. Filter by Search (ID or Type)
+			if (searchQuery) {
+				const q = searchQuery.toLowerCase();
+				const idMatch = scan.id.toLowerCase().includes(q);
+				const typeMatch = (scan.scan_type || "mammogram")
+					.toLowerCase()
+					.includes(q);
+				return idMatch || typeMatch;
+			}
+
+			return true;
+		});
+	}, [scans, filterType, searchQuery]);
 
 	const confirmDelete = (scanId: string) => {
 		setScanToDelete(scanId);
@@ -76,41 +101,58 @@ export default function HistoryPage() {
 
 	return (
 		<div className="md:ml-72">
-			<div className="max-w-6xl mx-auto pb-20 space-y-8">
-				<header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-					{/* ... same header ... */}
-					<div>
-						<h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-1">
-							Scan History
-						</h1>
-						<p className="text-slate-500 dark:text-slate-400">
-							Archive of all previous diagnostic sessions.
-						</p>
-					</div>
-					<div className="flex gap-3">
-						<button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
-							<Filter className="w-4 h-4" /> Filter
-						</button>
+			<div className="max-w-6xl mx-auto pb-20 space-y-8 pt-10 px-6">
+				<header className="flex flex-col gap-6">
+					<div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+						<div>
+							<h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-1">
+								Scan History
+							</h1>
+							<p className="text-slate-500 dark:text-slate-400">
+								Archive of all previous diagnostic sessions.
+							</p>
+						</div>
 						<div className="relative">
 							<Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
 							<input
 								type="text"
-								placeholder="Search ID..."
+								placeholder="Search ID or Type..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
 								className="pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm outline-none focus:border-pink-500 w-full md:w-64 shadow-sm text-slate-800 dark:text-slate-200"
 							/>
 						</div>
 					</div>
+
+					{/* Filter Tabs */}
+					<div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit">
+						{(["all", "mammogram", "ultrasound"] as const).map(
+							(type) => (
+								<button
+									key={type}
+									onClick={() => setFilterType(type)}
+									className={cn(
+										"px-4 py-2 rounded-lg text-sm font-bold capitalize transition-all",
+										filterType === type
+											? "bg-white dark:bg-slate-700 text-pink-600 dark:text-pink-400 shadow-sm"
+											: "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+									)}>
+									{type}
+								</button>
+							)
+						)}
+					</div>
 				</header>
 
 				<div className="grid gap-4">
-					{scans.length === 0 ? (
+					{filteredScans.length === 0 ? (
 						<div className="text-center py-20">
 							<p className="text-slate-400">
-								No scans recorded yet.
+								No scans found matching your criteria.
 							</p>
 						</div>
 					) : (
-						scans.map((scan: ScanRecord) => (
+						filteredScans.map((scan: ScanRecord) => (
 							<GlassCard
 								key={scan.id}
 								className="p-4 flex flex-col md:flex-row gap-6 items-center hover:bg-white/90 dark:hover:bg-slate-800/90 transition-colors cursor-pointer group">
@@ -133,6 +175,10 @@ export default function HistoryPage() {
 											No Img
 										</div>
 									)}
+									{/* Type Badge on Image */}
+									<div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/50 backdrop-blur rounded text-[10px] text-white font-medium uppercase">
+										{scan.scan_type || "Mammogram"}
+									</div>
 								</div>
 
 								<div className="flex-1 space-y-1 text-center md:text-left">
@@ -146,8 +192,9 @@ export default function HistoryPage() {
 										<span>•</span>
 										<span>ID: {scan.id.slice(0, 8)}</span>
 									</div>
-									<h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+									<h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center justify-center md:justify-start gap-2">
 										{scan.prediction_label} Detection
+										{/* Optional: Icon based on type */}
 									</h3>
 									<p className="text-sm text-slate-500 dark:text-slate-400">
 										Confidence Score:{" "}
@@ -161,7 +208,9 @@ export default function HistoryPage() {
 								</div>
 
 								<div className="flex-shrink-0 flex items-center gap-4">
-									{scan.prediction_label === "Malignant" ? (
+									{scan.prediction_label === "Malignant" ||
+									scan.prediction_label ===
+										"Potential Abnormality Detected" ? (
 										<div className="flex items-center gap-2 px-5 py-2 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-full text-sm font-bold border border-rose-100 dark:border-rose-900/30">
 											<AlertOctagon className="w-4 h-4" />{" "}
 											High Risk

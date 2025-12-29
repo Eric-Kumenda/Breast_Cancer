@@ -1,6 +1,6 @@
-# MammoDetect: AI-Powered Breast Cancer Detection
+# EarlyVision: AI-Powered Breast Cancer Detection
 
-MammoDetect is a state-of-the-art web application designed to assist in the early detection of breast cancer using Mammogram analysis. It leverages a custom **Vision Transformer (ViT)** model for high-accuracy classification and features a modern, empathetic user interface built with Next.js.
+EarlyVision is a state-of-the-art web application designed to assist in the early detection of breast cancer using Mammogram analysis. It leverages a custom **Vision Transformer (ViT)** model for high-accuracy classification and features a modern, empathetic user interface built with Next.js.
 
 ## 🌟 Key Features
 

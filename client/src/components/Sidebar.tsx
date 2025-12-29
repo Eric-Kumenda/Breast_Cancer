@@ -14,6 +14,10 @@ import {
 	X,
 	Sun,
 	Moon,
+	ChartPie,
+	Plus,
+	Microscope,
+	Fullscreen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -29,7 +33,10 @@ export default function Sidebar() {
 	if (!session) return null;
 
 	const links = [
-		{ name: "New Scan", href: "/", icon: Activity },
+		{ name: "Dashboard", href: "/", icon: ChartPie },
+		{ name: "Mammogram", href: "/mammogram", icon: Fullscreen },
+		{ name: "Ultrasound", href: "/ultrasound", icon: Microscope },
+
 		{ name: "History", href: "/history", icon: History },
 	];
 
@@ -49,12 +56,14 @@ export default function Sidebar() {
 					isOpen ? "translate-x-0" : "-translate-x-full"
 				)}>
 				<div className="flex items-center gap-3 mb-12">
-					<div className="w-10 h-10 bg-gradient-to-tr from-pink-500 to-rose-400 rounded-xl flex items-center justify-center shadow-lg shadow-pink-200 dark:shadow-none">
-						<Activity className="text-white w-6 h-6" />
+					<div className="flex items-center gap-3 px-2">
+						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+							<Activity className="h-6 w-6" />
+						</div>
+						<span className="text-xl font-bold text-foreground">
+							EarlyVision
+						</span>
 					</div>
-					<h1 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent">
-						MammoDetect
-					</h1>
 				</div>
 
 				<nav className="flex-1 space-y-3">
@@ -93,7 +102,7 @@ export default function Sidebar() {
 				</nav>
 
 				<div className="mt-auto space-y-4">
-					{/* Theme Toggle */}
+					{/* Theme Toggle 
 					<button
 						onClick={toggleTheme}
 						className="flex items-center gap-4 px-4 py-3 w-full rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors">
@@ -109,6 +118,7 @@ export default function Sidebar() {
 							</>
 						)}
 					</button>
+         					 */}
 
 					<div className="pt-4 border-t border-pink-100/50 dark:border-pink-500/10">
 						<div className="flex items-center gap-3 mb-4">
