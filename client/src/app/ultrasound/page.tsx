@@ -59,7 +59,7 @@ export default function UltrasoundPage() {
 				<motion.h1
 					initial={{ opacity: 0, x: -20 }}
 					animate={{ opacity: 1, x: 0 }}
-					className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-400 bg-clip-text text-transparent mb-2">
+					className="text-3xl font-bold bg-linear-to-r from-blue-600 to-cyan-400 bg-clip-text text-transparent mb-2">
 					Ultrasound Analysis
 				</motion.h1>
 				<p className="text-slate-500 dark:text-slate-400">
@@ -74,7 +74,8 @@ export default function UltrasoundPage() {
 					<ResultCard
 						prediction={result.prediction}
 						confidence={result.confidence}
-						imageUrl={result.mask_image || result.image_url}
+						imageUrl={result.image_url}
+						maskUrl={result.mask_image}
 					/>
 					{result.mask_image && (
 						<div className="text-center text-sm text-slate-500 mt-2">
@@ -101,6 +102,8 @@ export default function UltrasoundPage() {
 					<UploadZone
 						onFileSelect={handleFileSelect}
 						isScanning={scanning}
+						title="Upload Ultrasound"
+						modelName="U-Net Model"
 					/>
 				</div>
 			)}

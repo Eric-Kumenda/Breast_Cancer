@@ -42,7 +42,7 @@ export default function Home() {
 					<motion.h1
 						initial={{ opacity: 0, x: -20 }}
 						animate={{ opacity: 1, x: 0 }}
-						className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-rose-400 bg-clip-text text-transparent mb-2">
+						className="text-3xl font-bold bg-linear-to-r from-pink-600 to-amber-500 bg-clip-text text-transparent mb-2">
 						Dashboard
 					</motion.h1>
 					<p className="text-slate-500 dark:text-slate-400">

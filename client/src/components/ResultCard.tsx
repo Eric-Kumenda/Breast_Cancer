@@ -10,16 +10,20 @@ interface ResultCardProps {
 	prediction: string;
 	confidence: number;
 	imageUrl?: string;
+	maskUrl?: string;
 }
 
 export default function ResultCard({
 	prediction,
 	confidence,
 	imageUrl,
+	maskUrl,
 }: ResultCardProps) {
-	const isMalignant = prediction === "Malignant";
+	const isMalignant =
+		prediction === "Malignant" ||
+		prediction === "Potential Abnormality Detected";
 	const percentage = (confidence * 100).toFixed(1);
-	const color = isMalignant ? "rose" : "emerald"; // Tailwind dynamic colors can be tricky, stick to explicit classes or strict palette
+	// const color = isMalignant ? "rose" : "emerald";
 
 	return (
 		<GlassCard className="overflow-hidden p-0 md:p-0">
@@ -27,20 +31,33 @@ export default function ResultCard({
 				{/* Image Section */}
 				<div className="relative h-64 md:h-auto bg-slate-900 overflow-hidden group">
 					{imageUrl ? (
-						<motion.img
-							initial={{ scale: 1.1 }}
-							animate={{ scale: 1 }}
-							transition={{ duration: 1.5 }}
-							src={imageUrl}
-							alt="Scan"
-							className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-						/>
+						<>
+							<motion.img
+								initial={{ scale: 1.1 }}
+								animate={{ scale: 1 }}
+								transition={{ duration: 1.5 }}
+								src={imageUrl}
+								alt="Scan"
+								className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+							/>
+							{/* Segmentation Mask Overlay */}
+							{maskUrl && (
+								<motion.img
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 0.7 }}
+									transition={{ delay: 0.5, duration: 1 }}
+									src={maskUrl}
+									alt="Mask"
+									className="absolute inset-0 w-full h-full object-cover mix-blend-screen pointer-events-none z-20"
+								/>
+							)}
+						</>
 					) : (
 						<div className="w-full h-full flex items-center justify-center text-slate-500">
 							No Image
 						</div>
 					)}
-					<div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
+					<div className="absolute bottom-0 left-0 w-full p-4 bg-linear-to-t from-black/80 to-transparent z-30">
 						<span className="text-white/80 text-sm font-medium">
 							Input Source
 						</span>
@@ -76,7 +93,7 @@ export default function ResultCard({
 							<div>
 								<h2
 									className={cn(
-										"text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r",
+										"text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r",
 										isMalignant
 											? "from-rose-600 to-pink-600"
 											: "from-emerald-600 to-teal-500"
@@ -107,8 +124,8 @@ export default function ResultCard({
 								className={cn(
 									"h-full rounded-full",
 									isMalignant
-										? "bg-gradient-to-r from-rose-500 to-pink-500"
-										: "bg-gradient-to-r from-emerald-500 to-teal-500"
+										? "bg-linear-to-r from-rose-500 to-pink-500"
+										: "bg-linear-to-r from-emerald-500 to-teal-500"
 								)}
 							/>
 						</div>

@@ -11,6 +11,8 @@ EarlyVision is a state-of-the-art web application designed to assist in the earl
 -   **Secure Data Handling**: Integrated with **Supabase** for secure authentication, database management, and encrypted storage of medical images.
 -   **Analytics Dashboard**: Real-time statistics and visualization of diagnosis confidence.
 -   **History Archive**: Comprehensive log of past screenings (Mammogram & Ultrasound) with search and filter capabilities.
+-   **Detailed Scan View**: Interactive examination of scans, with AI overlay re-evaluation for Ultrasound images.
+-   **Interactive Visualization**: Opacity sliders to adjust mask and image visibility for detailed analysis.
 -   **Theme Support**: Fully accessible Light and Dark modes.
 
 ## 🏗️ System Architecture
@@ -76,10 +78,15 @@ pip install -r requirements.txt
 
 **Important:** The models are too large for GitHub and must be downloaded separately.
 
-1.  **Download the models** from this Google Drive link:
+1.  **Automatic Download (Recommended)**:
+    ```bash
+    cd backend
+    python download_model.py
+    ```
+2.  **Manual Download (Alternative)**:
     -   [Download Models (ViT & U-Net)](https://drive.google.com/file/d/13u77kKDAMRq-4Z3GFBp5Mz0CFv5PO9Hs/view?usp=drive_link)
-2.  **Move the files** to the `backend/models/` directory.
-    -   Ensure the filenames are `vit_mammogram_model.keras` and `ultrasound_unet_model.h5`.
+    -   Move them to `backend/models/`.
+    -   Ensure filenames: `vit_mammogram_model.keras` and `ultrasound_unet_model.h5`.
     -   Path: `.../backend/models/`
 
 #### Configure Environment Variables
@@ -160,6 +167,7 @@ earlyvision/
 │   │   └── vit_mammogram.py
 │   ├── .venv/             # Virtual Environment (excluded)
 │   ├── app.py             # Main Application Entry
+│   ├── download_model.py  # Model Downloader Script
 │   └── requirements.txt   # Python Dependencies
 ├── client/                 # Next.js Frontend
 │   ├── src/

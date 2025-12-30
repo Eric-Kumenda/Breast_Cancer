@@ -9,11 +9,15 @@ import { motion, AnimatePresence } from "framer-motion";
 interface UploadZoneProps {
 	onFileSelect: (file: File) => void;
 	isScanning: boolean;
+	title?: string;
+	modelName?: string;
 }
 
 export default function UploadZone({
 	onFileSelect,
 	isScanning,
+	title = "Upload Mammogram",
+	modelName = "AI Model",
 }: UploadZoneProps) {
 	const [isDragActive, setIsDragActive] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +68,7 @@ export default function UploadZone({
 						<div className="relative w-64 h-64 flex items-center justify-center">
 							{/* Scanning Bar */}
 							<motion.div
-								className="absolute w-full h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent shadow-[0_0_15px_rgba(236,72,153,0.8)] z-30"
+								className="absolute w-full h-1 bg-linear-to-r from-transparent via-pink-500 to-transparent shadow-[0_0_15px_rgba(236,72,153,0.8)] z-30"
 								animate={{ top: ["0%", "100%", "0%"] }}
 								transition={{
 									duration: 3,
@@ -75,7 +79,7 @@ export default function UploadZone({
 
 							<div className="w-48 h-48 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden relative">
 								{/* Fake scanning grid */}
-								<div className="absolute inset-0 bg-[linear-gradient(rgba(236,72,153,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(236,72,153,0.1)_1px,transparent_1px)] bg-[size:20px_20px]" />
+								<div className="absolute inset-0 bg-[linear-gradient(rgba(236,72,153,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(236,72,153,0.1)_1px,transparent_1px)] bg-size-[20px_20px]" />
 								<Loader2 className="w-8 h-8 text-pink-500 animate-spin z-10" />
 							</div>
 						</div>
@@ -90,7 +94,7 @@ export default function UploadZone({
 								<Sparkles className="w-5 h-5 text-pink-500 animate-pulse" />
 							</h3>
 							<p className="text-slate-500 mt-1">
-								VGG16 Model Processing • Detecting Anomalies
+								{modelName} Processing • Detecting Anomalies
 							</p>
 						</motion.div>
 					</motion.div>
@@ -112,7 +116,7 @@ export default function UploadZone({
 			</motion.div>
 
 			<h3 className="text-2xl font-bold mb-2 text-slate-800 text-center">
-				Upload Mammogram
+				{title}
 			</h3>
 			<p className="text-slate-500 mb-8 text-center max-w-sm">
 				Drag and drop your DICOM or Image files here, or click to

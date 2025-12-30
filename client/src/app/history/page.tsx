@@ -155,6 +155,7 @@ export default function HistoryPage() {
 						filteredScans.map((scan: ScanRecord) => (
 							<GlassCard
 								key={scan.id}
+								onClick={() => router.push(`/scan/${scan.id}`)}
 								className="p-4 flex flex-col md:flex-row gap-6 items-center hover:bg-white/90 dark:hover:bg-slate-800/90 transition-colors cursor-pointer group">
 								<div
 									className="w-full aspect-square md:w-24 md:h-24 md:aspect-auto flex-shrink-0 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden relative"

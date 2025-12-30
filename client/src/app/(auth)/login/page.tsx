@@ -72,13 +72,13 @@ export default function LoginPage() {
 		<div className="min-h-screen flex">
 			{/* Left Side - Image */}
 			<div className="hidden lg:block w-1/2 bg-slate-900 relative">
-				<div className="absolute inset-0 bg-gradient-to-tr from-pink-600/30 to-purple-600/30 mix-blend-overlay z-10" />
+				<div className="absolute inset-0 bg-linear-to-tr from-pink-500 to-rose-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl opacity-80" />
 				<img
 					src="/mammo_auth_bg.svg"
 					alt="Medical Background"
 					className="w-full h-full object-cover opacity-80"
 				/>
-				<div className="absolute bottom-0 left-0 w-full p-12 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20">
+				<div className="absolute bottom-0 left-0 w-full p-12 bg-linear-to-t from-black/90 via-black/50 to-transparent z-20">
 					<blockquote className="text-white max-w-lg">
 						<p className="text-2xl font-serif italic mb-4">
 							"Advanced detection, clearer results, and a better
