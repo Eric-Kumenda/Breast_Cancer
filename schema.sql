@@ -6,7 +6,8 @@ create table public.scans (
   annotated_image_url text,
   prediction_label text,
   confidence_score float,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  scan_type text
 );
 
 -- Enable RLS

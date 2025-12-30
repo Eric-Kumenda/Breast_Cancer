@@ -32,7 +32,7 @@
         </mxCell>
 
         <!-- Prediction -->
-        <mxCell id="predict" value="ViT Model Inference" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+        <mxCell id="predict" value="ViT / U-Net Inference" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
           <mxGeometry x="340" y="520" width="120" height="60" as="geometry" />
         </mxCell>
 
@@ -42,7 +42,7 @@
         </mxCell>
 
         <!-- Result -->
-        <mxCell id="result" value="Display Results&#xa;(Benign/Malignant)" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="result" value="Display Results&#xa;(Label / Mask)" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="320" y="720" width="160" height="60" as="geometry" />
         </mxCell>
 

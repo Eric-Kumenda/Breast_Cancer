@@ -1,20 +1,22 @@
 # EarlyVision: AI-Powered Breast Cancer Detection
 
-EarlyVision is a state-of-the-art web application designed to assist in the early detection of breast cancer using Mammogram analysis. It leverages a custom **Vision Transformer (ViT)** model for high-accuracy classification and features a modern, empathetic user interface built with Next.js.
+EarlyVision is a state-of-the-art web application designed to assist in the early detection of breast cancer using Mammogram analysis and Ultrasound imaging. It leverages a custom **Vision Transformer (ViT)** model for mammogram classification and a **U-Net** model for ultrasound tumor segmentation, featuring a modern, empathetic user interface built with Next.js.
 
 ## 🌟 Key Features
 
--   **Advanced AI Model**: Custom Vision Transformer (ViT) trained on mammogram datasets for precise Malignant vs. Benign classification.
+-   **Multi-Modality AI**:
+    -   **Mammogram**: Custom Vision Transformer (ViT) for precise Malignant vs. Benign classification.
+    -   **Ultrasound**: U-Net architecture for tumor segmentation and abnormality detection.
 -   **Modern UI/UX**: "Medical Pink" aesthetic with glassmorphism, fluid animations (Framer Motion), and responsive design.
 -   **Secure Data Handling**: Integrated with **Supabase** for secure authentication, database management, and encrypted storage of medical images.
 -   **Analytics Dashboard**: Real-time statistics and visualization of diagnosis confidence.
--   **History Archive**: Comprehensive log of past screenings with search and filter capabilities.
+-   **History Archive**: Comprehensive log of past screenings (Mammogram & Ultrasound) with search and filter capabilities.
 -   **Theme Support**: Fully accessible Light and Dark modes.
 
 ## 🏗️ System Architecture
 
 -   **Frontend**: Next.js 16 (React), Redux Toolkit, Tailwind CSS, Framer Motion.
--   **Backend**: Flask (Python), TensorFlow/Keras (ViT Model).
+-   **Backend**: Flask (Python), TensorFlow/Keras (ViT & U-Net Models).
 -   **Database & Storage**: Supabase (PostgreSQL, S3-compatible Storage).
 -   **Deployment**: Netlify (Frontend), Render (Backend - Recommended).
 
@@ -50,7 +52,7 @@ cd Breast_Cancer
 
 ### 2. Backend Setup (Flask API)
 
-The backend hosts the ViT model and exposes endpoints for prediction and data management.
+The backend hosts the AI models and exposes endpoints for prediction and data management.
 
 #### Windows
 
@@ -70,15 +72,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Download the AI Model
+#### Download the AI Models
 
-**Important:** The ViT model is too large for GitHub and must be downloaded separately.
+**Important:** The models are too large for GitHub and must be downloaded separately.
 
-1.  **Download the model** from this Google Drive link:
-    -   [Download vit_mammogram_model.keras](https://drive.google.com/file/d/13u77kKDAMRq-4Z3GFBp5Mz0CFv5PO9Hs/view?usp=drive_link)
-2.  **Move the file** to the `backend/models/` directory.
-    -   Ensure the filename is exactly `vit_mammogram_model.keras`.
-    -   Path should look like: `.../mammodetect/backend/models/vit_mammogram_model.keras`
+1.  **Download the models** from this Google Drive link:
+    -   [Download Models (ViT & U-Net)](https://drive.google.com/file/d/13u77kKDAMRq-4Z3GFBp5Mz0CFv5PO9Hs/view?usp=drive_link)
+2.  **Move the files** to the `backend/models/` directory.
+    -   Ensure the filenames are `vit_mammogram_model.keras` and `ultrasound_unet_model.h5`.
+    -   Path: `.../backend/models/`
 
 #### Configure Environment Variables
 
@@ -134,22 +136,25 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ## 🧠 Model Pipeline
 
-MammoDetect uses a **Vision Transformer (ViT)** instead of traditional CNNs.
+EarlyVision uses specialized models for each modality:
 
-1.  **Input**: Mammogram image (JPEG/PNG).
-2.  **Preprocessing**:
-    -   Convert to Grayscale.
-    -   Resize to 224x224 pixels.
-    -   Normalization: `(pixel - 0.5) / 0.5` (Scaling to [-1, 1]).
-3.  **Patching**: Image is split into 16x16 patches.
-4.  **Encoding**: Patches are linearly projected and combined with positional embeddings.
-5.  **Transformer Encoder**: processed through 8 layers of Multi-Head Self-Attention (4 heads) and MLPs.
-6.  **Classification Head**: MLP + Softmax to output probabilities for **Benign** and **Malignant**.
+### 1. Mammogram Analysis (ViT)
+
+-   **Model**: Custom Vision Transformer (ViT).
+-   **Preprocessing**: Grayscale, 224x224 resize, [-1, 1] normalization.
+-   **Process**: Patching (16x16) -> Linear Projection -> Transformer Encoder (8 layers, 4 heads) -> MLP Head.
+-   **Output**: Probability of **Benign** vs **Malignant**.
+
+### 2. Ultrasound Analysis (U-Net)
+
+-   **Model**: U-Net Architecture for Semantic Segmentation.
+-   **Preprocessing**: RGB, 128x128 resize, [0, 1] normalization.
+-   **Output**: Segmentation Mask highlighting tumor regions.
 
 ## 📂 Project Structure
 
 ```
-mammodetect/
+earlyvision/
 ├── backend/                # Flask API & Model
 │   ├── models/            # Model files & Architecture
 │   │   └── vit_mammogram.py
