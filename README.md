@@ -20,7 +20,7 @@ EarlyVision is a state-of-the-art web application designed to assist in the earl
 -   **Frontend**: Next.js 16 (React), Redux Toolkit, Tailwind CSS, Framer Motion.
 -   **Backend**: Flask (Python), TensorFlow/Keras (ViT & U-Net Models).
 -   **Database & Storage**: Supabase (PostgreSQL, S3-compatible Storage).
--   **Deployment**: Netlify (Frontend), Render (Backend - Recommended).
+-   **Deployment**: Netlify (Frontend), Local and served via Ngrok HTTPS tunneling (Backend).
 
 ---
 
