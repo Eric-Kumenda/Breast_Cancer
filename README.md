@@ -4,23 +4,23 @@ EarlyVision is a state-of-the-art web application designed to assist in the earl
 
 ## 🌟 Key Features
 
--   **Multi-Modality AI**:
-    -   **Mammogram**: Custom Vision Transformer (ViT) for precise Malignant vs. Benign classification.
-    -   **Ultrasound**: U-Net architecture for tumor segmentation and abnormality detection.
--   **Modern UI/UX**: "Medical Pink" aesthetic with glassmorphism, fluid animations (Framer Motion), and responsive design.
--   **Secure Data Handling**: Integrated with **Supabase** for secure authentication, database management, and encrypted storage of medical images.
--   **Analytics Dashboard**: Real-time statistics and visualization of diagnosis confidence.
--   **History Archive**: Comprehensive log of past screenings (Mammogram & Ultrasound) with search and filter capabilities.
--   **Detailed Scan View**: Interactive examination of scans, with AI overlay re-evaluation for Ultrasound images.
--   **Interactive Visualization**: Opacity sliders to adjust mask and image visibility for detailed analysis.
--   **Theme Support**: Fully accessible Light and Dark modes.
+- **Multi-Modality AI**:
+    - **Mammogram**: Custom Vision Transformer (ViT) for precise Malignant vs. Benign classification.
+    - **Ultrasound**: U-Net architecture for tumor segmentation and abnormality detection.
+- **Modern UI/UX**: "Medical Pink" aesthetic with glassmorphism, fluid animations (Framer Motion), and responsive design.
+- **Secure Data Handling**: Integrated with **Supabase** for secure authentication, database management, and encrypted storage of medical images.
+- **Analytics Dashboard**: Real-time statistics and visualization of diagnosis confidence.
+- **History Archive**: Comprehensive log of past screenings (Mammogram & Ultrasound) with search and filter capabilities.
+- **Detailed Scan View**: Interactive examination of scans, with AI overlay re-evaluation for Ultrasound images.
+- **Interactive Visualization**: Opacity sliders to adjust mask and image visibility for detailed analysis.
+- **Theme Support**: Fully accessible Light and Dark modes.
 
 ## 🏗️ System Architecture
 
--   **Frontend**: Next.js 16 (React), Redux Toolkit, Tailwind CSS, Framer Motion.
--   **Backend**: Flask (Python), TensorFlow/Keras (ViT & U-Net Models).
--   **Database & Storage**: Supabase (PostgreSQL, S3-compatible Storage).
--   **Deployment**: Netlify (Frontend), Local and served via Ngrok HTTPS tunneling (Backend).
+- **Frontend**: Next.js 16 (React), Redux Toolkit, Tailwind CSS, Framer Motion.
+- **Backend**: Flask (Python), TensorFlow/Keras (ViT & U-Net Models).
+- **Database & Storage**: Supabase (PostgreSQL, S3-compatible Storage).
+- **Deployment**: Netlify (Frontend), Local and served via Ngrok HTTPS tunneling (Backend).
 
 ---
 
@@ -30,9 +30,9 @@ Follow these instructions to set up the project on your local machine.
 
 ### Prerequisites
 
--   **Git**: [Download Git](https://git-scm.com/downloads)
--   **Node.js** (v18+): [Download Node.js](https://nodejs.org/)
--   **Python** (3.9+): [Download Python](https://www.python.org/downloads/)
+- **Git**: [Download Git](https://git-scm.com/downloads)
+- **Node.js** (v18+): [Download Node.js](https://nodejs.org/)
+- **Python** (3.9+): [Download Python](https://www.python.org/downloads/)
 
 ### 1. Get the Source Code
 
@@ -84,10 +84,10 @@ pip install -r requirements.txt
     python download_model.py
     ```
 2.  **Manual Download (Alternative)**:
-    -   [Download Models (ViT & U-Net)](https://drive.google.com/file/d/13u77kKDAMRq-4Z3GFBp5Mz0CFv5PO9Hs/view?usp=drive_link)
-    -   Move them to `backend/models/`.
-    -   Ensure filenames: `vit_mammogram_model.keras` and `ultrasound_unet_model.h5`.
-    -   Path: `.../backend/models/`
+    - [Download Models (ViT & U-Net)](https://drive.google.com/file/d/13u77kKDAMRq-4Z3GFBp5Mz0CFv5PO9Hs/view?usp=drive_link)
+    - Move them to `backend/models/`.
+    - Ensure filenames: `vit_mammogram_model.keras` and `ultrasound_unet_model.h5`.
+    - Path: `.../backend/models/`
 
 #### Configure Environment Variables
 
@@ -147,16 +147,16 @@ EarlyVision uses specialized models for each modality:
 
 ### 1. Mammogram Analysis (ViT)
 
--   **Model**: Custom Vision Transformer (ViT).
--   **Preprocessing**: Grayscale, 224x224 resize, [-1, 1] normalization.
--   **Process**: Patching (16x16) -> Linear Projection -> Transformer Encoder (8 layers, 4 heads) -> MLP Head.
--   **Output**: Probability of **Benign** vs **Malignant**.
+- **Model**: Custom Vision Transformer (ViT).
+- **Preprocessing**: Grayscale, 224x224 resize, [-1, 1] normalization.
+- **Process**: Patching (16x16) -> Linear Projection -> Transformer Encoder (8 layers, 4 heads) -> MLP Head.
+- **Output**: Probability of **Benign** vs **Malignant**.
 
 ### 2. Ultrasound Analysis (U-Net)
 
--   **Model**: U-Net Architecture for Semantic Segmentation.
--   **Preprocessing**: RGB, 128x128 resize, [0, 1] normalization.
--   **Output**: Segmentation Mask highlighting tumor regions.
+- **Model**: U-Net Architecture for Semantic Segmentation.
+- **Preprocessing**: RGB, 128x128 resize, [0, 1] normalization.
+- **Output**: Segmentation Mask highlighting tumor regions.
 
 ## 📂 Project Structure
 
@@ -178,6 +178,15 @@ earlyvision/
 │   └── package.json       # Node Dependencies
 └── docs/                   # Documentation & Diagrams
 ```
+
+## 📖 Documentation
+
+Detailed system documentation is available in the [`docs/`](docs/) directory:
+
+- [**System Architecture**](docs/system_architecture.md) — Component breakdown, database schema, state management, and security model.
+- [**AI Algorithms & Model Pipeline**](docs/algorithms.md) — ViT and U-Net architectures, hyperparameters, training details, and preprocessing pipelines.
+- [**Data Flow**](docs/data_flow.md) — Sequence diagrams for all user flows (auth, upload, history, deletion).
+- [**API Endpoints**](docs/api_endpoints.md) — REST API reference for all backend endpoints.
 
 ## 🤝 Contributing
 
